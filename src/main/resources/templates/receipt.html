@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<head>
+
+    <meta charset="utf-8"></meta>
+
+    <title>Title</title>
+
+    <style type="text/css">
+
+        body {
+            margin: 0;
+        }
+
+        * {
+            font-family: "Arimo";
+            font-size: 10px;
+        }
+        h1{
+            font-size: 16px;
+            margin: 0;
+            text-align: left;
+        }
+
+        h5 {
+            margin: 0;
+        }
+
+        h6{
+            font-size: 20px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h4 {
+            font-size: 12px;
+            margin: 8px;
+        }
+
+        h3 {
+            font-size: 11px;
+            text-align: left;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border: 2px solid black;
+            border-collapse: collapse;
+        }
+
+        .tableHeader {
+            background: #ccc;
+            text-align: center;
+            padding: 1px;
+            border: 1px solid black;
+        }
+
+        .tdImageTableName {
+            border-bottom: 2px solid black;
+            border-top: 2px solid black;
+            border-right: 2px solid black;;
+        }
+
+        .tdImageTable {
+            border-left: 2px solid black;
+            border-right: 2px solid black;;
+            border-bottom: none;
+            border-top: none;
+        }
+
+        td {
+            height: 50%;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid black;
+        }
+
+        .tdInvisible {
+            border: 0;
+        }
+
+        .tdNum {
+            width: 2%;
+        }
+
+        .tdName {
+            width: 77%;
+        }
+
+        .tdAmount {
+            width: 4%;
+        }
+
+        .tdType {
+            width: 4%;
+        }
+
+        .tdPrice {
+            width: 6%;
+        }
+
+        .tdSumPrice {
+            width: 7%;
+        }
+        .tdSumFinalPrice {
+            background: #ccc;
+            width: 7%;
+        }
+
+
+        img {
+            width: 100px;
+            height: 100px;
+            float: right;
+        }
+
+        .profile_picture {
+            display: block;
+            width: auto;
+            height: 140px;
+
+        }
+        .marginTopNon{
+            margin-top: 0;
+        }
+        .marginBottomNon{
+            margin-bottom: 0;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+<!--<div class="tableImgDiv">-->
+<!--    <img class="profile_picture" src="Co2ReceiptLabel.png" alt="Co2 Recipe"/>-->
+<!--</div>-->
+
+<table>
+    <tr>
+        <td class="tdImageTable" colspan="2" ></td>
+        <td colspan="4" rowspan="7">
+            <h6 class="marginTopNon" th:text="${receipt.getDealDeliveryPlace()}"></h6>
+            <h6 th:text="${receipt.getDealContactDescription()}"></h6>
+            <h6 class="marginBottomNon" th:text="${receipt.getDealPaymentOption() + ' ' + receipt.getDealSumPrice()+ ' ' + 'грн'}"></h6>
+        </td>
+
+    </tr>
+
+    <tr>
+        <td colspan="2" class="tdImageTable"><h1 th:text="${'Номер заказа: ' + receipt.getDealId()}"></h1></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="tdImageTable"><h1 th:text="${'Дата: ' + receipt.getDealDate()}"></h1></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h1 th:text="${'Менеджер: ' + receipt.getDealManagerDescription()}"></h1></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h1 th:text="${'Коментар: ' + receipt.getDealComment()}"></h1></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable">
+            <h1 th:text="${'Отримувач: ' + receipt.getDealContactDescription()+ ', '+ receipt.getDealContactNumber() + ', ' + receipt.getDealDeliveryPlace()}"></h1></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable">
+            <h1 th:text="${'Оплата: ' + receipt.getDealPaymentOption() + ' ' + receipt.getDealSumPrice() + 'грн'}"></h1></td>
+    </tr>
+
+    <tr>
+        <td colspan="6"></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="tdImageTableName"><h2>Видаткова накладна</h2></td>
+
+        <td colspan="4" rowspan="6">
+            <div class="profile_picture"/>
+
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h3 th:text="${'Дата: ' + receipt.getDealDate()}"></h3></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h3 th:text="${'Менеджер: ' + receipt.getDealManagerDescription()}"></h3></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h3>Адрес: ул. Кооперативная 13/2, Харьков(co2.prom.ua)</h3></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable"><h3>Контакт : 066-123-01-52, 098-740-14-07, 063-128-00-62,
+            057-727-02-42</h3></td>
+    </tr>
+    <tr>
+        <td colspan="2" class="tdImageTable">
+            <h3 th:text="${'Отримувач: ' + receipt.getDealContactDescription()+ ', '+ receipt.getDealContactNumber() + ', ' + receipt.getDealDeliveryPlace()}"></h3></td>
+    </tr>
+
+    <tr>
+        <td class="tableHeader"><h4>№</h4></td>
+        <td class="tableHeader"><h4>Назва</h4></td>
+        <td class="tableHeader"><h4>Кількість</h4></td>
+        <td class="tableHeader"><h4>Одиниця</h4></td>
+        <td class="tableHeader"><h4>Ціна</h4></td>
+        <td class="tableHeader"><h4>Сума</h4></td>
+    </tr>
+
+    <tr th:each="prodRow, prodRowStat : ${receipt.getBitrixProductRows()}">
+        <td class="tdNum"><h5 th:text="${prodRowStat.count}"></h5></td>
+        <td class="tdName"><h5 th:text="${prodRow.getProductName()}">Пневматическая винтовка Hatsan Striker Edge с газовой пружиной Vado 123 и расконсервацией</h5></td>
+        <td class="tdAmount"><h5 th:text="${prodRow.getQuantity()}"></h5></td>
+        <td class="tdType"><h5>шт</h5></td>
+        <td class="tdPrice"><h5 th:text="${prodRow.getPrice()}"></h5></td>
+        <td class="tdSumPrice"><h5 th:text="${prodRow.getSumPrice()}"></h5></td>
+    </tr>
+
+
+    <tr>
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tableHeader tdPrice"><h5>Всього:</h5></td>
+        <td class="tdSumFinalPrice"><h5 th:text="${receipt.getDealSumPrice()}"></h5></td>
+    </tr>
+
+    <tr th:if="${receipt.isDiscountExist()}">
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tdInvisible"></td>
+        <td class="tableHeader tdPrice"><h5>Знижка:</h5></td>
+        <td class="tdSumFinalPrice"><h5 th:text="${receipt.getDealSumDiscount()}"></h5></td>
+    </tr>
+
+</table>
+
+</body>
+
+</html>

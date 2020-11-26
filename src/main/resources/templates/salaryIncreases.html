@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<head>
+    <title>Co2 Дневная зарплата</title>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <link rel="stylesheet" th:href="@{/csssource/item_list_stylesheet.css}">
+    <script th:src="@{/jssource/utils.js}"></script>
+</head>
+
+
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+
+<style>
+    td {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+</div>
+
+<div class="table-wrapper">
+    <div class="table-title">
+        <div class="row">
+            <div class="col-sm-4">
+                <h2 th:text="${ currentWorker!=null ? ('Баланс ' + currentWorker.getEmail() + ' : ' + currentWorker.getSalaryBalance() + ' грн.') : 'Admin'}"></h2>
+            </div>
+            <div class="col-sm-8">
+                <a th:href="@{/salary/increases}" class="btn btn-primary"><i class="material-icons">&#xE863;</i>
+                    <span>Сбросить фильтры</span></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-filter">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="show-entries">
+                    <span>Кол-во</span>
+                    <select id="selectPageSize" class="form-control" onchange="location = this.value;">
+                        <option th:value="@{/salary/manager/increases(size=5 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryIncreasesPage.getSize() == 5}">5
+                        </option>
+                        <option th:value="@{/salary/manager/increases(size=15 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryIncreasesPage.getSize() == 15}">15
+                        </option>
+                        <option th:value="@{/salary/manager/increases(size=50 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryIncreasesPage.getSize() == 50}">50
+                        </option>
+                        <option th:value="@{/salary/manager/increases(size=100 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryIncreasesPage.getSize() == 100}">100
+                        </option>
+                    </select>
+                    <span>страниц</span>
+                </div>
+            </div>
+            <div class="col-sm-9">
+
+                <div class="filter-group">
+                    <label>Менеджер</label>
+                    <select id="selectManager" class="form-control" onchange="location = this.value;">
+                        <option
+                                th:value="@{/salary/manager/increases(size=${salaryIncreasesPage.getSize()},
+                        managerId = 0)}"
+                                th:selected="${currentWorker == null}">Все
+                        </option>
+                        <option th:each="worker : ${workersList}"
+                                th:value="@{/salary/manager/increases(size=${salaryIncreasesPage.getSize()},
+                              workerId = ${worker == null ? 0 : worker.getId()})}"
+                                th:selected="${worker !=null ? (currentWorker != null ? currentWorker.getId()== worker.getId() : false)  : false }"
+                                th:text="${worker.getEmail()}">
+                        </option>
+                    </select>
+                </div>
+                <span class="filter-icon"><i class="fa fa-filter"></i></span>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped table-hover" id="orderListTable">
+        <thead>
+        <tr>
+
+            <th>ID</th>
+            <th>ID сделки</th>
+            <th>Менеджер</th>
+            <th>Добавка</th>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Детальнее</th>
+
+
+        </tr>
+        </thead>
+        <tbody th:each="salaryIncrease : ${salaryIncreasesPage}">
+
+        <tr>
+            <td th:text="${salaryIncrease.getId()}"></td>
+            <td th:text="${salaryIncrease.getBitrixDealId()}"></td>
+
+            <td th:text="${salaryIncrease.getWorker().getEmail()}"></td>
+
+            <td th:text="${salaryIncrease.getSalaryIncreaseAmount()}"></td>
+            <td th:text="${salaryIncrease.getCreationDate().toString()}">
+            </td>
+            <td th:text="${salaryIncrease.getDetailedCreationDate().toString()}">
+            </td>
+
+            <td><a target="_blank" th:href="@{https://co2.bitrix24.ua/crm/deal/details/{id}/(id=${salaryIncrease.getBitrixDealId()})}" class="view"
+                   title="Детальнее на Bitrix24" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+            </td>
+
+
+
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="clearfix">
+        <div class="hint-text">Всего позиций по поисковому запросу: <b
+                th:text="${salaryIncreasesPage.getTotalElements()}"></b>
+        </div>
+        <ul class="pagination">
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/increases(size=${salaryIncreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    class="page-link"> << </a></li>
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/increases(page = ${salaryIncreasesPage.getNumber()-1},
+                    size=${salaryIncreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    th:if="${salaryIncreasesPage.getNumber() > 0}"
+                    class="page-link"> < </a></li>
+            <li class="page-item active"><a class="page-link"
+                                            th:text="${salaryIncreasesPage.getNumber()}"></a></li>
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/increases(page = ${salaryIncreasesPage.getNumber()+1},
+                    size=${salaryIncreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    th:if="${(salaryIncreasesPage.getNumber() + 1) < salaryIncreasesPage.getTotalPages()}"
+                    class="page-link"> > </a></li>
+
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/increases(page = ${salaryIncreasesPage.getTotalPages()-1},
+                    size=${salaryIncreasesPage.getSize()},
+                            workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    class="page-link"> >> </a></li>
+        </ul>
+    </div>
+</div>
+
+
+</body>
+</html>

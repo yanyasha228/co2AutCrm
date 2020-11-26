@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<head>
+    <title>Co2 Склад</title>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <link rel="stylesheet" th:href="@{/csssource/item_list_stylesheet.css}">
+    <script th:src="@{/jssource/products.js}"></script>
+    <script th:src="@{/jssource/utils.js}"></script>
+</head>
+
+
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+
+<style>
+    td {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+
+<div class="table-wrapper">
+    <div class="table-title">
+        <div class="row">
+            <div class="col-sm-4">
+                <h2>Co2 <b>Склад</b></h2>
+            </div>
+            <div class="col-sm-8">
+                <a sec:authorize="hasAuthority('ADMIN')" title="Добавить Товар"
+                   data-toggle="modal"
+                   data-target="#addProductModal" class="btn btn-primary"><i class="material-icons">&#xe147;</i>
+                    <span>Добавить Товар</span></a>
+                <a th:href="@{/products}" class="btn btn-primary"><i class="material-icons">&#xE863;</i>
+                    <span>Сбросить фильтры</span></a>
+                <a sec:authorize="hasAuthority('ADMIN')" target="_blank" th:href="@{/importFileCsv.csv}"
+                   class="btn btn-info"><i class="material-icons">&#xE24D;</i> <span>Создать ImprotFile</span></a>
+                <a sec:authorize="hasAuthority('ADMIN')" target="_blank" th:href="@{/bitrix/connect}"
+                   class="btn btn-info"><i class="material-icons">&#xE863;</i> <span>Связать с Bitrix</span></a>
+                <a target="_blank"
+                   th:href="@{/store.csv(groupId = ${groupId} , availability = ${availability})}"
+                   class="btn btn-info"><i class="material-icons">&#xE24D;</i> <span>Выгрузить товары</span></a>
+                <a sec:authorize="hasAuthority('ADMIN')" id="uploadCsvStore"
+                   data-toggle="modal"
+                   data-target="#uploadCsvStoreModal" href="#" class="btn btn-info"><i class="fa fa-cloud-upload" aria-hidden="true"></i> <span>Загрузить файл коррекции</span></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-filter">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="show-entries">
+                    <span>Кол-во</span>
+                    <select id="selectPageSize" class="form-control" onchange="location = this.value;">
+                        <option th:value="@{/products(size=5 ,
+                        availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${productsPage.getSize() == 5}">5
+                        </option>
+                        <option th:value="@{/products(size=15 ,
+                             availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${productsPage.getSize() == 15}">15
+                        </option>
+                        <option th:value="@{/products(size=50 ,
+                             availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${productsPage.getSize() == 50}">50
+                        </option>
+                        <option th:value="@{/products(size=100 ,
+                             availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${productsPage.getSize() == 100}">100
+                        </option>
+                    </select>
+                    <span>страниц</span>
+                </div>
+            </div>
+            <div class="col-sm-9">
+
+                <form th:action="@{/products}" id="searchInputForm" method="get" role="form" autocomplete="off">
+
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i>
+                    </button>
+                    <div class="filter-group">
+                        <label>Имя</label>
+                        <input th:value="${nonFullProductName}" type="text" name="nonFullProductName"
+                               class="form-control" id="productNameSearchInput">
+                        <div id="searchProductsList"></div>
+                    </div>
+
+                </form>
+
+                <div class="filter-group">
+                    <label>Группа</label>
+                    <select id="selectGroup" class="form-control" onchange="location = this.value;">
+                        <option
+                                th:value="@{/products(size=${productsPage.getSize()} ,
+                             availability = ${availability},
+                             groupId = 0 ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${groupId == 0}">Все
+                        </option>
+                        <option th:each="group : ${groups}"
+                                th:value="@{/products(
+                                        size=${productsPage.getSize()} ,
+                              availability = ${availability},
+                             groupId = ${group.getId()},
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${groupId == group.getId() }"
+                                th:text="${group.getName()}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Статус</label>
+                    <select id="selectValidationStatus" class="form-control"
+                            onchange="location = this.value;">
+                        <option th:value="@{/products(
+                                        size=${productsPage.getSize()} ,
+                             availability = null,
+                              groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${availability == null}">Все
+                        </option>
+                        <option th:value="@{/products(
+                                        size=${productsPage.getSize()} ,
+                             availability = true,
+                              groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${availability == true}">В наличии
+                        </option>
+
+                        <option th:value="@{/products(
+                                        size=${productsPage.getSize()} ,
+                             availability = false,
+                              groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                                th:selected="${availability == false}">Нет в наличии
+                        </option>
+
+                    </select>
+                </div>
+                <span class="filter-icon"><i class="fa fa-filter"></i></span>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped table-hover" id="orderListTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th></th>
+            <th>Кол-во</th>
+            <th>Товар</th>
+            <th>Цена опт.</th>
+            <th></th>
+            <th>Цена</th>
+            <th sec:authorize="hasAuthority('STOREKEEPER')">В поставку</th>
+            <th>Prom.ua</th>
+        </tr>
+        </thead>
+        <tbody th:each="product : ${productsPage}">
+
+        <tr>
+            <td th:text="${product.getId()}"></td>
+            <td><img th:src="@{${product.getMain_image()}}"
+                     width="70" height="70" class="avatar"
+                     alt="Avatar"></td>
+            <td>
+                <a href="#"
+                   th:text="${product.getAmount()}"
+                   th:data-product-id="${product.getId()}"
+                   th:data-product-name="${product.getName()}"
+                   th:data-previous-amount="${product.getAmount()}"
+                   id="correctProductAmount"
+                   data-toggle="modal"
+                   data-target="#correctProductAmountModal">
+                </a>
+            </td>
+            <td><a th:href="@{/products/{id}/history(id=${product.getId()})}"
+                   th:title="${product.getName()}"
+                   th:text="${product.getName()}"
+                   target="_blank">
+            </a></td>
+            <!--            <td th:text="${#dates.format(product.getLastValidationDate(), 'dd-MM-yyyy')}"></td>-->
+            <td>
+                <div id="tdWholeSalePrice">
+                    <span class="status text-info"
+                    >&bull;</span>
+                    <a href="#"
+                       th:text="${product.getWholeSalePrice()}"
+                       th:data-product-id="${product.getId()}"
+                       th:data-product-name="${product.getName()}"
+                       th:data-previous-wholesale-price="${product.getWholeSalePrice()}"
+                       id="productWholeSalePrice"
+                       data-toggle="modal"
+                       data-target="#changeWholeSalePriceModal">
+                    </a>
+                </div>
+            </td>
+            <td>
+                <span class="status"
+                      th:classappend="${product.isAvailability()} ? text-success : text-danger ">&bull;</span>
+            </td>
+            <td th:text="${product.getPrice() + ' ' + product.getCurrency().toString()}">----</td>
+
+            <td sec:authorize="hasAuthority('STOREKEEPER')"><a target="_blank"
+                                                               th:href="@{/supplies/create(productId=${product.getId()})}"
+                                                               class="view"
+                                                               title="В поставку" data-toggle="tooltip"><i
+                    class="material-icons">&#xE5C8;</i></a>
+            </td>
+
+            <td><a target="_blank" th:href="@{https://my.prom.ua/cms/product/edit/{id}(id=${product.getId()})}"
+                   title="Редактировать на Prom.ua" class="view"><i class="material-icons">visibility</i></a>
+            </td>
+
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="clearfix">
+        <div class="hint-text">Всего позиций по поисковому запросу: <b th:text="${productsPage.getTotalElements()}"></b>
+        </div>
+        <ul class="pagination">
+            <li class="page-item"><a
+                    th:href="@{/products(size=${productsPage.getSize()} ,
+                             availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                    class="page-link"> << </a></li>
+            <li class="page-item"><a
+                    th:href="@{/products(page = ${productsPage.getNumber() - 1},
+                                        size=${productsPage.getSize()} ,
+                            availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                    th:if="${productsPage.getNumber() > 0}"
+                    class="page-link"> < </a></li>
+            <li class="page-item active"><a class="page-link"
+                                            th:text="${productsPage.getNumber()}"></a></li>
+            <li class="page-item"><a
+                    th:href="@{/products(page = ${productsPage.getNumber() + 1},
+                                        size=${productsPage.getSize()} ,
+                             availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                    th:if="${(productsPage.getNumber() + 1) < productsPage.getTotalPages()}"
+                    class="page-link"> > </a></li>
+
+            <li class="page-item"><a
+                    th:href="@{/products(page = ${productsPage.getTotalPages() - 1},
+                                        size=${productsPage.getSize()} ,
+                            availability = ${availability},
+                             groupId = ${groupId} ,
+                             nonFullProductName = ${nonFullProductName})}"
+                    class="page-link"> >> </a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Добавить товар : </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div><label for="inputProductId">ID Товара : </label>
+                    <input
+                            id="inputProductId"
+                            type="number"
+                            class="form-control">
+
+                </div>
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button" id="addProductLink" class="btn btn-secondary">Сохранить</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div sec:authorize="hasAuthority('ADMIN')" class="modal fade" id="changeWholeSalePriceModal" tabindex="-1" role="dialog"
+     aria-labelledby="changeWholeSalePriceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeWholeSalePriceModalLabel">Новая опт. цена</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeWholeSalePriceModalProductNameLabel"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="inputNewWholeSalePrice" class="col-form-label">Опт.цена:</label>
+                    <input type="number" id="inputNewWholeSalePrice" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i></button>
+                <button type="button" id="changeWholeSalePriceButton" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div sec:authorize="hasAuthority('ADMIN')" class="modal fade" id="correctProductAmountModal" tabindex="-1" role="dialog"
+     aria-labelledby="correctProductAmountModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="correctProductAmountModalLabel">Коректировка количества</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="correctProductAmountModalProductNameLabel"></h5>
+            </div>
+            <div class="modal-header">
+                <h5 style="font-weight: bold;" class="modal-title"
+                    id="correctProductAmountModalProductAmountLabel"></h5>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="inputNewWholeSalePrice" class="col-form-label">Название:</label>
+                            <input disabled type="text" id="inputProductNameModal"
+                                   class="form-control form-control is-valid">
+                        </div>
+                        <div class="col-3">
+                            <label for="inputProductAmountModal" class="col-form-label">Кол-во:</label>
+                            <input type="number" id="inputProductAmountModal" class="form-control is-invalid">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="inputProductCorrectionDescriptionModal"
+                                   class="col-form-label">Коментарий:</label>
+                            <input type="text" id="inputProductCorrectionDescriptionModal"
+                                   class="form-control form-control">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i></button>
+                <button type="button" id="correctProductAmountButton" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div sec:authorize="hasAuthority('ADMIN')" class="modal fade" id="uploadCsvStoreModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadCsvStoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadCsvStoreModalLabel">Загрузка файла коррекции</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{/uploadStoreCsv}" id="uploadStoreCsvForm" method="post" autocomplete="off" enctype="multipart/form-data">
+            <div class="modal-body">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="file">
+                    <label class="custom-file-label" for="customFile">Выбрать файл</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i></button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

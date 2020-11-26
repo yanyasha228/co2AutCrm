@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <script th:src="@{/jssource/utils.js}"></script>
+    <title>Курс валют</title>
+</head>
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+<div class="row">
+    <div class="col-sm-3">
+
+        <div th:replace="settingsFragments :: settings_option_list"></div>
+
+    </div>
+
+    <div class="col-sm-7" >
+    <div class="container" id="settings-content">
+        <div class="row">
+            <div class="control-group" id="fields">
+                <div class="controls">
+                    <form th:action="@{/settings/exchangeRates/submit}" th:object="${appSettingsModel}" method="post" role="form" autocomplete="off">
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="">$</span>
+                            </div>
+                            <input th:field="*{usdCurrency}" type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" onclick="numValidDouble(this)">
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">€</span>
+                            </div>
+                            <input th:field="*{eurCurrency}" type="text" class="form-control" onclick="numValidDouble(this)">
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Сохранить
+                            </button>
+                        </div>
+
+                    </form>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

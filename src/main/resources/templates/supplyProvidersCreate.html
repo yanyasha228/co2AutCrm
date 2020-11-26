@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<head>
+    <title>Создать поставщика</title>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <link rel="stylesheet" th:href="@{/csssource/item_list_stylesheet.css}">
+    <script th:src="@{/jssource/utils.js}"></script>
+    <script th:src="@{/jssource/product_edit.js}"></script>
+
+</head>
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+
+<div class="table-wrapper">
+    <div class="table-title">
+    </div>
+</div>
+<div class="controls">
+    <form th:action="@{/supplies/providers/create/submit}" th:object="${supplyProvider}" method="post"
+          role="form" autocomplete="off">
+
+        <!--        <input hidden-->
+        <!--               type="text"-->
+        <!--               th:field="*{id}">-->
+
+
+        <div class="col-md-7">
+
+            <div class="row">
+
+
+                <div class="form-group col-md-12"><label th:for="*{name}">Название поставщика:</label>
+                    <input
+                            type="text"
+                            class="form-control"
+                            th:field="*{name}">
+                </div>
+
+
+            </div>
+
+            <div class="row">
+
+<!--                <div class="form-group col-md-12"><label th:for="*{cssQueryForValidating}">CssQuery:</label>-->
+<!--                    <input-->
+<!--                            type="text"-->
+<!--                            class="form-control"-->
+<!--                            th:field="*{cssQueryForValidating}">-->
+
+<!--                </div>-->
+
+
+            </div>
+            <div class="row">
+
+                <div class="form-group col-md-12">
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Сохранить</button>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="col-md-5">
+
+
+        </div>
+
+    </form>
+    <br>
+</div>
+
+</body>
+</html>

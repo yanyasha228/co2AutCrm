@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<div th:fragment="settings_option_list">
+<div class="list-group" id="settings-slide-bar">
+    <link rel="stylesheet" th:href="@{/csssource/settings_pages.css}" >
+    <a href="/settings/exchangeRates" class="list-group-item list-group-item-action"
+       th:classappend="${#httpServletRequest.requestURI.contains('exchangeRates')} ? active : ''">
+        Курс Валют</a>
+    <a href="/settings/users" th:classappend="${#httpServletRequest.requestURI.contains('users')} ? active : ''" class="list-group-item list-group-item-action">Управление пользователями</a>
+    <a href="#" class="list-group-item list-group-item-action disabled">Оповещения</a>
+    <a href="#" class="list-group-item list-group-item-action disabled">Сервисы доставки</a>
+    <a href="#" class="list-group-item list-group-item-action disabled">Статистика</a>
+    <a href="/settings/rozetka/params" th:classappend="${#httpServletRequest.requestURI.contains('rozetka')} ? active : ''" class="list-group-item list-group-item-action">Розетка</a>
+</div>
+</div>
+</html>

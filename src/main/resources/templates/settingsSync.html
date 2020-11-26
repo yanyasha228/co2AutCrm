@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <script th:src="@{/jssource/edit_order.js}"></script>
+    <title>Курс валют</title>
+</head>
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+<div class="row">
+    <div class="col-sm-3">
+
+        <div th:replace="settingsFragments :: settings_option_list"></div>
+    </div>
+
+    <div class="col-sm-7">
+
+        <div class="container" id="settings-content">
+            <div class="row">
+                <div class="control-group" id="fields">
+                    <div class="controls">
+                        <form th:action="@{sync/submit}" method="post" role="form" autocomplete="off">
+
+                            <div class="input-group mb-7">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Url</span>
+                                </div>
+                                <input type="url" name="syncUrl" class="form-control" aria-describedby="inputGroup-sizing-sm">
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-outline-success my-2 my-sm-4" type="submit">Валидировать
+                                </button>
+                            </div>
+
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

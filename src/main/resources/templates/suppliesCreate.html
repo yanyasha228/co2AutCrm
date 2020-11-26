@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+
+<head>
+    <title>Создание поставки</title>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+
+    <script type="text/javascript" th:src="@{/jssource/utils.js}"></script>
+    <script type="text/javascript" th:src="@{/jssource/supplies_create.js}"></script>
+
+
+</head>
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="control-group order-edit-group" id="fields">
+            <div class="controls">
+                <form id="orderForm" th:action="@{create/submit}" th:object="${supply}" method="post" role="form"
+                      autocomplete="off">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6"><label for="selectSupplyProvider">Поставщик</label>
+
+                                    <select id="selectSupplyProvider" name="supplyProviderId" class="form-control">
+                                        <option th:each="supplyProvider : ${supplyProviders}"
+                                                th:value="${supplyProvider.getId()}"
+                                                th:text="${supplyProvider.getName()}">
+                                        </option>
+                                    </select>
+
+                                </div>
+                                <div class="form-group col-md-6"><label for="selectSupplyStatus">Статус</label>
+                                    <select
+                                            id="selectSupplyStatus" name="supplyStatus"
+                                            class="form-control">
+
+                                        <option th:each="supplyStatusIter : ${T(com.co2AutomaticCrm.Models.ModelEnums.SupplyStatus).values()}"
+                                                th:value="${supplyStatusIter.name()}"
+                                                th:text="${supplyStatusIter.getAlias()}"
+                                                th:selected="${supplyStatusIter == supplyStatus}">
+                                        </option>
+
+                                    </select></div>
+                            </div>
+
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12"><label th:for="*{description}">Коментарий к
+                                    поставке:</label>
+                                    <input
+                                            type="text"
+                                            class="form-control"
+                                            th:field="*{description}">
+                                </div>
+                            </div>
+
+                            <div class="form-row" id="depProductLines">
+
+                            </div>
+
+                            <div class="form-group">
+                                <button class="btn btn-outline-success my-2 my-sm-0" id="submitButton" type="submit">
+                                    Сохранить поставку
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="productLines" class="form-group col-md-6">
+                            <label for="productLines">Позиции поставки:</label>
+                            <div class="controls-1">
+
+                                <div id="productLine" class="entry">
+                                    <div class="form-row">
+
+                                        <div class="form-group col-md-8" id="inputOrdProdNameDiv">
+
+                                            <input hidden
+                                                   type="number"
+                                                   class="form-control"
+                                                   id="productLineId"
+                                                   name="productLineId"
+                                            th:value="${transProduct.isPresent() ? transProduct.get().getId() : 0}">
+
+                                            <label for="productLineProductName">Товар</label>
+                                            <input class="form-control is-invalid"
+                                                   id="productLineProductName" type="text"
+                                                   th:class="${transProduct.isPresent() ? 'form-control is-valid' : 'form-control is-invalid'}"
+                                                   th:value="${transProduct.isPresent() ? transProduct.get().getName() : ''}"/>
+                                            <div id="searchOrderLineProductsList">
+                                                <ul class="list-group product-search-editor-res"
+                                                    id="searchProductResult"></ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-md-2">
+                                            <label for="productLineProductQua">Кол-во</label>
+                                            <input class="form-control is-invalid"
+                                                   name="productLineProductQua"
+                                                   id="productLineProductQua" type="number"/>
+                                        </div>
+
+                                        <div class="form-group col-md-1">
+                                                            <span class="input-group-btn">
+                                                            <button class="btn btn-success btn-add" type="button">
+                                                                <span class="glyphicon glyphicon-plus"></span>
+                                                            </button>
+                                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

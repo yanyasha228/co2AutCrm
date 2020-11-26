@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="ru">
+
+<head>
+    <title>Co2 Убавки Баланса</title>
+    <div th:replace="allPagesTemplates :: all_pages_head_data"></div>
+    <link rel="stylesheet" th:href="@{/csssource/item_list_stylesheet.css}">
+    <!--    <script th:src="@{/jssource/products.js}"></script>-->
+    <script th:src="@{/jssource/utils.js}"></script>
+    <script th:src="@{/jssource/salary_decrease.js}"></script>
+</head>
+
+
+<body>
+<div th:replace="allPagesTemplates :: navBar"></div>
+
+<style>
+    td {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+</div>
+
+<div class="table-wrapper">
+
+    <div class="table-title">
+        <div class="row">
+            <div class="col-sm-4">
+                <h2 th:text="${ currentWorker!=null ? ('Минус-баланс ' + currentWorker.getEmail() + ' : ' + currentWorker.getSalaryDecreaseBalance() + ' грн.') : 'Admin'}"></h2>
+            </div>
+
+            <div sec:authorize="hasAuthority('ADMIN')" class="col-sm-8">
+                <a title="Добавить"
+                   th:data-manager-id="${currentWorker == null ? 0 : currentWorker.getId()}"
+                   th:data-manager-name="${currentWorker == null ? '' : currentWorker.getEmail()}"
+                   data-toggle="modal"
+                   data-target="#nullifySalaryDecreaseBalanceModal" class="btn btn-add"
+                ><i class="material-icons">&#xe147;</i>
+                    <span>Обнулить</span></a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="table-filter">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="show-entries">
+                    <span>Кол-во</span>
+                    <select id="selectPageSize" class="form-control" onchange="location = this.value;">
+                        <option th:value="@{/salary/manager/decreases(size=5 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryDecreasesPage.getSize() == 5}">5
+                        </option>
+                        <option th:value="@{/salary/manager/decreases(size=15 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryDecreasesPage.getSize() == 15}">15
+                        </option>
+                        <option th:value="@{/salary/manager/decreases(size=50 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryDecreasesPage.getSize() == 50}">50
+                        </option>
+                        <option th:value="@{/salary/manager/decreases(size=100 ,
+                        workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                                th:selected="${salaryDecreasesPage.getSize() == 100}">100
+                        </option>
+                    </select>
+                    <span>страниц</span>
+                </div>
+            </div>
+            <div class="col-sm-9">
+
+                <div class="filter-group">
+                    <label>Менеджер</label>
+                    <select id="selectManager" class="form-control" onchange="location = this.value;">
+                        <option
+                                th:value="@{/salary/manager/decreases(size=${salaryDecreasesPage.getSize()},
+                        managerId = 0)}"
+                                th:selected="${currentWorker == null}">Все
+                        </option>
+                        <option th:each="worker : ${workersList}"
+                                th:value="@{/salary/manager/decreases(size=${salaryDecreasesPage.getSize()},
+                              workerId = ${worker == null ? 0 : worker.getId()})}"
+                                th:selected="${worker !=null ? (currentWorker != null ? currentWorker.getId()== worker.getId() : false)  : false }"
+                                th:text="${worker.getEmail()}">
+                        </option>
+                    </select>
+                </div>
+                <span class="filter-icon"><i class="fa fa-filter"></i></span>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped table-hover" id="orderListTable">
+        <thead>
+        <tr>
+
+            <th>ID</th>
+            <th>Менеджер</th>
+            <th>Убавка</th>
+            <th>Дата</th>
+            <th>Время</th>
+            <th>Детальнее</th>
+
+
+        </tr>
+        </thead>
+        <tbody th:each="salaryDecrease : ${salaryDecreasesPage}">
+
+        <tr>
+            <td th:text="${salaryDecrease.getId()}"></td>
+
+            <td th:text="${salaryDecrease.getWorker().getEmail()}"></td>
+
+            <td th:text="${salaryDecrease.getSalaryDecreaseAmount()}"></td>
+            <td th:text="${salaryDecrease.getCreationDate().toString()}">
+            </td>
+            <td th:text="${salaryDecrease.getDetailedCreationDate().toString()}">
+            </td>
+            <td><a target="_blank" th:href="@{https://co2.bitrix24.ua/crm/deal/details/{id}/(id=${salaryDecrease.getBitrixDealId()})}" class="view"
+                   title="Детальнее на Bitrix24" data-toggle="tooltip"><i class="material-icons">&#xE5C8;</i></a>
+            </td>
+
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="clearfix">
+        <div class="hint-text">Всего позиций по поисковому запросу: <b th:text="${salaryDecreasesPage.getTotalElements()}"></b>
+        </div>
+        <ul class="pagination">
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/decreases(size=${salaryDecreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    class="page-link"> << </a></li>
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/decreases(page = ${salaryDecreasesPage.getNumber()-1},
+                    size=${salaryDecreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    th:if="${salaryDecreasesPage.getNumber() > 0}"
+                    class="page-link"> < </a></li>
+            <li class="page-item active"><a class="page-link"
+                                            th:text="${salaryDecreasesPage.getNumber()}"></a></li>
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/decreases(page = ${salaryDecreasesPage.getNumber()+1},
+                    size=${salaryDecreasesPage.getSize()},
+                             workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    th:if="${(salaryDecreasesPage.getNumber() + 1) < salaryDecreasesPage.getTotalPages()}"
+                    class="page-link"> > </a></li>
+
+            <li class="page-item"><a
+                    th:href="@{/salary/manager/decreases(page = ${salaryDecreasesPage.getTotalPages()-1},
+                    size=${salaryDecreasesPage.getSize()},
+                            workerId = ${currentWorker == null ? 0 : currentWorker.getId()})}"
+                    class="page-link"> >> </a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="nullifySalaryDecreaseBalanceModal" tabindex="-1" role="dialog" aria-labelledby="nullifySalaryDecreaseBalanceModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nullifySalaryDecreaseBalanceModalLabel">Обнулить баланс : </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <h4 class="modal-title" id="nullifySalaryDecreaseBalanceManagerName">Удалить продукт : </h4>
+                <hr>
+                <h6 style="color: red"><b>Баланс будет удален безвозвратно!!!</b></h6>
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Нет</button>
+                <button type="button" id="nullifySalaryDecreaseBalanceModalButton" data-supply-provider-id="" class="btn btn-secondary">Да</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
